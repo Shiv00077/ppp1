@@ -64,8 +64,8 @@ for x in range(len(p)):
             st = xlwt.easyxf('pattern: pattern solid;')
             sheetname.write(sheet-1, 0, 'Response',st)
             res = "response" + str(c) + "="
-            responseresult = [element for element in p if req in element]
-            response = responseresult[0].partition(req)[2]
+            responseresult = [element for element in p if res in element]
+            response = responseresult[0].partition(res)[2]
             response = response.replace('\n', '');
             print(response)
             f = open(response, "r");
