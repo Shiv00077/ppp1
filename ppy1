@@ -1,0 +1,94 @@
+import xlwt
+from lxml import etree
+
+from xlwt import Workbook
+
+wb = Workbook()
+properties = open("properties.txt", "r");
+
+p = properties.readlines()
+capability = 'capability'
+number = 'number'
+service = 'service'
+num = 1
+i = 1;
+
+for x in range(len(p)):
+    if (x == 0):
+        Capability = p[x]
+        capability = "Capability=";
+        cap = Capability.partition(capability)[2]
+
+    if (x == 1):
+        Number = p[x]
+        number = "Number=";
+        number = Number.partition(number)[2]
+        num = int(number)
+
+        for a in range(1, num + 1):
+            c = a;
+            ser = "service" + str(c) + "="
+            print(ser)
+            result = [element for element in p if ser in element]
+            service = result[0].partition(ser)[2]
+            print(service)
+            sheetname = 'sheet' + str(c)
+            sheetname = wb.add_sheet(service);
+            st = xlwt.easyxf('pattern: pattern solid;')
+            sheetname.write(0, 0, 'Request',st)
+            req = "request"+str(c)+"="
+            requestresult=[element for element in p if req in element]
+            request = requestresult[0].partition(req)[2]
+            request = request.replace('\n', '');
+            print(request)
+            f = open(request, "r");
+            xpath = f.read()
+            root = etree.fromstring(xpath).getroottree()
+            sheet = 0
+            for e in root.iter():
+
+                path = root.getelementpath(e)
+
+                root_path = '/' + root.getroot().tag
+
+                if path == '.':
+                    path = root_path
+
+                else:
+                    path = root_path + '/' + path
+                    print(path)
+                    sheetname.write(sheet, 0, path)
+
+                sheet = sheet + 1;
+            sheet= sheet+10;
+            st = xlwt.easyxf('pattern: pattern solid;')
+            sheetname.write(sheet-1, 0, 'Response',st)
+            res = "response" + str(c) + "="
+            responseresult = [element for element in p if req in element]
+            response = responseresult[0].partition(req)[2]
+            response = response.replace('\n', '');
+            print(response)
+            f = open(response, "r");
+            xpathres = f.read()
+            root = etree.fromstring(xpathres).getroottree()
+            for e in root.iter():
+
+                path = root.getelementpath(e)
+
+                root_path = '/' + root.getroot().tag
+
+                if path == '.':
+                    path = root_path
+
+                else:
+                    path = root_path + '/' + path
+                    print(path)
+                    sheetname.write(sheet, 0, path)
+
+                sheet = sheet + 1;
+print(cap)
+c = cap.replace('\n', '');
+wb.save(c + '.xls')
+
+print(capability)
+print(number)
